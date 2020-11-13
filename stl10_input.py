@@ -26,16 +26,13 @@ DEPTH = 3
 SIZE = HEIGHT * WIDTH * DEPTH
 
 # path to the directory with the data
-DATA_DIR = './data'
-
-# url of the binary data
-DATA_URL = 'http://ai.stanford.edu/~acoates/stl10/stl10_binary.tar.gz'
+DATA_DIR = '/kaggle/input/stl10-binary'
 
 # path to the binary train file with image data
-DATA_PATH = './data/stl10_binary/train_X.bin'
+DATA_PATH = '/kaggle/input/stl10-binary/stl10_binary/train_X.bin'
 
 # path to the binary train file with labels
-LABEL_PATH = './data/stl10_binary/train_y.bin'
+LABEL_PATH = '/kaggle/input/stl10-binary/stl10_binary/train_y.bin'
 
 def read_labels(path_to_labels):
     """
@@ -95,42 +92,15 @@ def read_single_image(image_file):
     return image
 
 
-def plot_image(image):
-    """
-    :param image: the image to be plotted in a 3-D matrix format
-    :return: None
-    """
-    plt.imshow(image)
-    plt.show()
-
 def save_image(image, name):
     imsave("%s.png" % name, image, format="png")
-
-def download_and_extract():
-    """
-    Download and extract the STL-10 dataset
-    :return: None
-    """
-    dest_directory = DATA_DIR
-    if not os.path.exists(dest_directory):
-        os.makedirs(dest_directory)
-    filename = DATA_URL.split('/')[-1]
-    filepath = os.path.join(dest_directory, filename)
-    if not os.path.exists(filepath):
-        def _progress(count, block_size, total_size):
-            sys.stdout.write('\rDownloading %s %.2f%%' % (filename,
-                float(count * block_size) / float(total_size) * 100.0))
-            sys.stdout.flush()
-        filepath, _ = urllib.urlretrieve(DATA_URL, filepath, reporthook=_progress)
-        print('Downloaded', filename)
-        tarfile.open(filepath, 'r:gz').extractall(dest_directory)
 
 def save_images(images, labels):
     print("Saving images to disk")
     i = 0
     for image in images:
         label = labels[i]
-        directory = './img/' + str(label) + '/'
+        directory = '/kaggle/working/stl10-binary/img/' + str(label) + '/'
         try:
             os.makedirs(directory, exist_ok=True)
         except OSError as exc:
@@ -140,16 +110,8 @@ def save_images(images, labels):
         print(filename)
         save_image(image, filename)
         i = i+1
-    
+
 if __name__ == "__main__":
-    # download data if needed
-    download_and_extract()
-
-    # test to check if the image is read correctly
-    with open(DATA_PATH) as f:
-        image = read_single_image(f)
-        plot_image(image)
-
     # test to check if the whole dataset is read correctly
     images = read_all_images(DATA_PATH)
     print(images.shape)
